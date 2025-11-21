@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <template id="report_invoice_document_nothour" inherit_id="account.report_invoice_document">
+        <xpath expr="//div[@name='invoice_date']" position="after">
+             <div class="col-auto col-3 mw-100 mb-2" t-if="o.date != o.invoice_date" name="date">
+                  <t t-if="o.move_type == 'out_invoice'"><strong>Fecha Operación:</strong></t>
+                  <t t-elif="o.move_type == 'out_refund'"><strong>Fecha Operación:</strong></t>
+                  <t t-elif="o.move_type == 'out_receipt'"><strong>Fecha Operación:</strong></t>
+                  <t t-else=""><strong>Fecha:</strong></t>
+                  <p class="m-0" t-field="o.date"/>
+             </div>
+        </xpath>
+    </template>
+</odoo>

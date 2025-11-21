@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="invoice_date_operation_verifactu_form" model="ir.ui.view">
+        <field name="name">account.invoice.date.operation.verifactu.form</field>
+        <field name="model">account.move</field>
+        <field name="inherit_id" ref="account.view_move_form" />
+        <field name="arch" type="xml">
+             <xpath expr="//group[@id='header_right_group']/field[@name='date']" position="attributes">
+                <attribute name="attrs">{'readonly': [('state', '!=', 'draft')]}</attribute>
+             </xpath>
+        </field>
+    </record>
+    <record id="invoice_send_failed_hide_verifactu_form" model="ir.ui.view">
+        <field name="name">account.invoice.send.failed.verifactu.form</field>
+        <field name="model">account.move</field>
+        <field name="inherit_id" ref="l10n_es_verifactu_oca.invoice_verifactu_form" />
+        <field name="arch" type="xml">
+             <xpath expr="//field[@name='aeat_send_failed']" position="attributes">
+                <attribute name="attrs">{'readonly': True}</attribute>
+             </xpath>
+        </field>
+    </record>
+
+</odoo>
