@@ -21,35 +21,42 @@ class AccountMove(models.Model):
                         )
         return super(AccountMove, self).action_post()
 
-
-    @api.onchange('invoice_date', 'highest_name', 'company_id')
-    def _onchange_invoice_date(self):
+    @api.depends('invoice_date', 'company_id')
+    def _compute_date(self):
         # Guardamos fecha original
-        original_date = self.date
+        #self.date = fields.Date.context_today(self)
+        if self.date: #and self.is_sale_document(include_receipts=True):
+           original_date = self.date
+        else:
+           if self.invoice_date:
+              original_date = self.invoice_date
+           else:
+              original_date = fields.Date.context_today(self)
+        res = super(AccountMove, self)._compute_date()
+        if self.is_sale_document(include_receipts=True):
+           self.date = original_date
+           # _affect_tax_report may trigger premature recompute of line_ids.date
+           self.env.add_to_compute(self.line_ids._fields['date'], self.line_ids)
+           # might be protected because `_get_accounting_date` requires the `name`
+           self.env.add_to_compute(self._fields['name'], self)
+        return res
+
+
+    """@api.onchange('date')
+    def _onchange_date(self):
+       # Guardamos fecha original
+        if self.date != self.invoice_date:
+           original_date = self.date
         # Ejecutamos comportamiento estándar
-        super(AccountMove, self)._onchange_invoice_date()
+        super(AccountMove, self)._onchange_date()
         # Si es factura de venta: mantener la fecha original y validar límite
+        #raise Warning(self.is_sale_document(include_receipts=True))
         if self.is_sale_document(include_receipts=True):
             # Restaurar fecha original antes de validarla
-            self.date = original_date
-            """# --- CONTROL DE ANTIGÜEDAD 15 DÍAS ---
-            if self.date:
-                limite = fields.Date.today() - timedelta(days=15)
-
-                # Si la fecha es más antigua que (hoy - 15 días)
-                if self.date < limite:
-                    # Muestra error y restaura la fecha a límite
-                    self.date = limite
-                    return {
-                        'warning': {
-                            'title': _("Fecha demasiado antigua"),
-                            'message': _(
-                                "La fecha de operación no puede ser anterior a %s "
-                                "(más de 15 días respecto a hoy)."
-                            ) % limite
-                        }
-                    }"""
-
+            if self.date != self.invoice_date:
+               self.date = original_date
+            #raise Warning(self.date)"""
+    
     def _get_verifactu_invoice_dict_out(self, cancel=False):
         res = super()._get_verifactu_invoice_dict_out(cancel)
         # Solo aplicar si RegistroAlta existe

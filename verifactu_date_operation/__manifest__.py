@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 {
     'name': 'VERI*FACTU Fecha Operacion',
-    'version': '15.0.0.1',
+    'version': '16.0.0.1',
     'category': 'Accounting & Finance',
     'description': """
 Incorpora la fecha operación (Fecha Contable) en el envío a VERI*FACTU
@@ -13,7 +13,7 @@ Bloquea el campo ¿Fallido?, para que no se pueda desmarcar
         'l10n_es_verifactu_oca', 'account'
     ],
     'init_xml': [],
-    'update_xml': [
+    'data': [
        'views/account_move.xml',
        'report/report_invoice.xml',
     ],
